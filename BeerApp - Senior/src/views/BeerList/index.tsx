@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Beer, BeerListParams, BeerMetadata } from '../../types';
 import { fetchData, fetchMetaData } from './utils';
-import { Avatar, List, ListItemAvatar, ListItemButton, ListItemText, Pagination } from '@mui/material';
+import { Avatar, Container, List, ListItemAvatar, ListItemButton, ListItemText, Pagination, TextField } from '@mui/material';
 import SportsBar from '@mui/icons-material/SportsBar';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,7 +27,14 @@ const BeerList = () => {
       ...listParams,
       page: value,
     })
-  }, []);
+  }, [listParams]);
+  const onFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setListParams({
+      ...listParams,
+      search: event.target.value,
+      page: 1,
+    })
+  }, [listParams])
 
   return (
     <article>
@@ -36,6 +43,9 @@ const BeerList = () => {
           <h1>BeerList page</h1>
         </header>
         <main>
+          <Container>
+            <TextField id="filter" label="Filter" value={listParams.search} onChange={onFilterChange} />
+          </Container>
           <List>
             {beerList.map((beer) => (
               <ListItemButton key={beer.id} onClick={onBeerClick.bind(this, beer.id)}>
