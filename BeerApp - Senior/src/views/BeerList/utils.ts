@@ -1,11 +1,15 @@
-import { getBeerList } from '../../api';
-import { Beer } from '../../types';
+import { getBeerList, getBeerMetaData } from '../../api';
+import { Beer, BeerListParams, BeerMetadata } from '../../types';
 import handle from '../../utils/error';
 
-const fetchData = (setData: (data: Array<Beer>) => void) => {
+const fetchData = (setData: (data: Array<Beer>) => void, params: BeerListParams) => {
   (async () => {
     try {
-      const response = await getBeerList();
+      const response = await getBeerList({
+        page: params.page,
+        per_page: params.perPage,
+        by_name: params.search,
+      });
       setData(response.data);
     } catch (error) {
       handle(error);
@@ -13,4 +17,19 @@ const fetchData = (setData: (data: Array<Beer>) => void) => {
   })();
 };
 
-export { fetchData };
+const fetchMetaData = (setData: (data: BeerMetadata) => void, params: BeerListParams) => {
+  (async () => {
+    try {
+      const response = await getBeerMetaData({
+        page: params.page,
+        per_page: params.perPage,
+        by_name: params.search,
+      });
+      setData({ total: Number(response.data.total)});
+    } catch (error) {
+      handle(error);
+    }
+  })();
+};
+
+export { fetchData, fetchMetaData };

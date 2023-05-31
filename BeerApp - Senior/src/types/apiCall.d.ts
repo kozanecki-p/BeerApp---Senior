@@ -13,4 +13,10 @@ interface ApiParams {
   by_type?: TYPE;
 }
 
-export type { ApiParams };
+export interface BeerListParams {
+  page: number;
+  perPage: number;
+  search?: string;
+}
+
+export type { ApiParams, BeerListParams };
