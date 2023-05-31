@@ -1,27 +1,25 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Beer, BeerListParams, BeerMetadata } from '../../types';
 import { fetchData, fetchMetaData } from './utils';
-import { Avatar, Container, List, ListItemAvatar, ListItemButton, ListItemText, Pagination, TextField } from '@mui/material';
-import SportsBar from '@mui/icons-material/SportsBar';
-import { useNavigate } from 'react-router-dom';
+import { Grid, Pagination, SelectChangeEvent, TextField } from '@mui/material';
+import BeerListItems from './components/BeerListItems';
+import SortSelect, { SortSelectOption } from './components/SortSelect';
 
 const PAGE_SIZE = 10;
 
 const BeerList = () => {
-  const navigate = useNavigate();
   const [beerList, setBeerList] = useState<Array<Beer>>([]);
   const [beerMetaData, setBeerMetadata] = useState<BeerMetadata>({total: 0})
   const [listParams, setListParams] = useState<BeerListParams>({
     page: 1,
     perPage: PAGE_SIZE,
-    search: ''
+    search: '',
+    sort: SortSelectOption.nameAscending,
   });
 
-  // eslint-disable-next-line
-  useEffect(fetchData.bind(this, setBeerList, listParams), [listParams]);
-  useEffect(fetchMetaData.bind(this, setBeerMetadata, listParams), [listParams]);
+  useEffect(() => fetchData(setBeerList, listParams), [listParams]);
+  useEffect(() => fetchMetaData(setBeerMetadata, listParams), [listParams]);
 
-  const onBeerClick = (id: string) => navigate(`/beer/${id}`);
   const onPageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
     setListParams({
       ...listParams,
@@ -34,6 +32,13 @@ const BeerList = () => {
       search: event.target.value,
       page: 1,
     })
+  }, [listParams]);
+  const onSortChange = useCallback((event: SelectChangeEvent) => {
+    setListParams({
+      ...listParams,
+      sort: event.target.value,
+      page: 1,
+    })
   }, [listParams])
 
   return (
@@ -43,21 +48,16 @@ const BeerList = () => {
           <h1>BeerList page</h1>
         </header>
         <main>
-          <Container>
-            <TextField id="filter" label="Filter" value={listParams.search} onChange={onFilterChange} />
-          </Container>
-          <List>
-            {beerList.map((beer) => (
-              <ListItemButton key={beer.id} onClick={onBeerClick.bind(this, beer.id)}>
-                <ListItemAvatar>
-                  <Avatar>
-                    <SportsBar />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={beer.name} secondary={beer.brewery_type} />
-              </ListItemButton>
-            ))}
-          </List>
+          <Grid container spacing={2}>
+            <Grid item>
+              <TextField id="filter" label="Filter" value={listParams.search} onChange={onFilterChange} />
+            </Grid>
+            
+            <Grid item>
+              <SortSelect sort={listParams.sort as SortSelectOption} onSortChange={onSortChange} />
+            </Grid>
+          </Grid>
+          <BeerListItems beerList={beerList} />
           <Pagination count={Math.ceil(beerMetaData.total / PAGE_SIZE)} onChange={onPageChange} />
         </main>
       </section>

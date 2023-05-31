@@ -9,6 +9,7 @@ const fetchData = (setData: (data: Array<Beer>) => void, params: BeerListParams)
         page: params.page,
         per_page: params.perPage,
         by_name: params.search,
+        sort: params.sort,
       });
       setData(response.data);
     } catch (error) {
@@ -24,6 +25,7 @@ const fetchMetaData = (setData: (data: BeerMetadata) => void, params: BeerListPa
         page: params.page,
         per_page: params.perPage,
         by_name: params.search,
+        sort: params.sort,
       });
       setData({ total: Number(response.data.total)});
     } catch (error) {

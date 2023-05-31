@@ -1,5 +1,3 @@
-import { TYPE } from './';
-
 interface BeerMetadata {
   total: number;
 }
